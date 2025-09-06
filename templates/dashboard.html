@@ -1,26 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Dashboard | EcoFinds</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        header { background-color: #2E8B57; color: white; padding: 20px; text-align: center; }
+        nav { background-color: #333; }
+        nav ul { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; }
+        nav ul li { margin: 0 15px; }
+        nav ul li a { color: white; text-decoration: none; font-weight: bold; }
+        .search-container { text-align: center; margin: 20px 0; }
+        .search-container input, .search-container select, .search-container button { padding: 8px 12px; margin-right: 10px; font-size: 14px; }
+        .products { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+        .product-card { border: 1px solid #ddd; border-radius: 8px; padding: 15px; width: 220px; text-align: center; box-shadow: 1px 1px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .product-card h3 { font-size: 18px; margin: 10px 0 5px; }
+        .product-card p { margin: 5px 0; font-size: 14px; }
+        a.product-link { text-decoration: none; color: inherit; display: block; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Your Dashboard</h1>
+    <header>
+        <h1>Sustainable Second-Hand Marketplace</h1>
+    </header>
 
-    <!-- Add navigation buttons -->
     <nav>
-    <ul>
-        <li><a href="{{ url_for('my_products') }}">My Products</a></li>
-        <li><a href="{{ url_for('add_product_page') }}">Add New Product</a></li>
-        <li><a href="{{ url_for('all_products') }}">All Products</a></li>
-       <a href="{{ url_for('view_cart') }}">View Your Cart</a>
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('my_products') }}">My Products</a></li>
+            <li><a href="{{ url_for('add_product_page') }}">Add Product</a></li>
+            <li><a href="{{ url_for('all_products') }}">All Products</a></li>
+            <li><a href="{{ url_for('view_cart') }}">Cart</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </nav>
 
-        <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
-</nav>
+    <div class="search-container">
+        <form method="get" action="{{ url_for('dashboard') }}">
+            <input type="text" name="name" placeholder="Search by product name" value="{{ request.args.get('name','') }}">
+            <select name="category">
+                <option value="">All Categories</option>
+                <option value="Books" {% if request.args.get('category')=='Books' %}selected{% endif %}>Books</option>
+                <option value="Electronics" {% if request.args.get('category')=='Electronics' %}selected{% endif %}>Electronics</option>
+                <option value="Household" {% if request.args.get('category')=='Household' %}selected{% endif %}>Household</option>
+                <option value="Appliances" {% if request.args.get('category')=='Appliances' %}selected{% endif %}>Appliances</option>
+                <option value="Others" {% if request.args.get('category')=='Others' %}selected{% endif %}>Others</option>
+            </select>
+            <button type="submit">Search</button>
+        </form>
+    </div>
 
-
-    <!-- Your existing dashboard content here -->
+    <div class="products">
+        {% for product in products %}
+        <!-- Redirect to All Products filtered by this product title -->
+        <a class="product-link" href="{{ url_for('all_products') }}?search={{ product.title }}">
+            <div class="product-card">
+                <!-- Image removed -->
+                <h3>{{ product.title }}</h3>
+                <p>Category: {{ product.category }}</p>
+                <p>Price: ₹{{ product.price }}</p>
+                <p>Seller: {{ product.seller_name }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
 
 </body>
 </html>
